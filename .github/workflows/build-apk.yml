@@ -1,0 +1,77 @@
+name: Build VisaOperatorHub APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Package APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Generate Official Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.5
+
+      - name: Setup Release Keystore
+        run: |
+          if [ ! -f app/release.keystore ]; then
+            keytool -genkeypair -v -keystore app/release.keystore -alias visahunter -keyalg RSA -keysize 2048 -validity 10000 -storepass visahunter123 -keypass visahunter123 -dname "CN=VisaHunter, OU=Dev, O=VisaHunter, L=Cairo, C=EG"
+          else
+            echo "Using permanent committed release.keystore"
+          fi
+
+      - name: Build Signed Release APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log || true
+          mkdir -p release-output
+          if [ ! -f app/build/outputs/apk/release/app-release.apk ]; then
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            cp build.log release-output/build-error.txt
+          else
+            cp app/build/outputs/apk/release/app-release.apk release-output/VisaOperatorHub-v1.0.0.apk
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VisaOperatorHub-v1.0.0
+          path: release-output/*
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v1.0.0"
+          files: release-output/*
+          name: "VisaOperatorHub Release v1.0.0"
+          body: |
+            ### 🚀 VisaHunter Operator Hub v1.0.0
+            - ✅ إدارة مساحة العمل المعزولة (Work Profile Provisioning)
+            - 💼 استنساخ تطبيق Almaviva كنسخة ثانية معزولة بشريحة الأمان
+            - ⚡ خدمة النقر التلقائي الفوري لتأكيد تحديات الـ QR والدخول
+            - 👥 اختصار مباشر لإعدادات المستخدمين المتعددين (Native Add User)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

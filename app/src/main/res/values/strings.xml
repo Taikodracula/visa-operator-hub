@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">VisaHunter Operator Hub</string>
+    <string name="accessibility_service_name">مساعد تشغيل المافيفا المعزول</string>
+    <string name="accessibility_service_description">يقوم بالنقر التلقائي الفوري لتأكيد تحديات الـ QR والموافقة على الدخول لتطبيق Almaviva في كلا المساحتين الشخصية والمعزولة.</string>
+</resources>

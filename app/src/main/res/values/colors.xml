@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#0D47A1</color>
+    <color name="primary_variant">#1565C0</color>
+    <color name="accent_blue">#1E88E5</color>
+    <color name="accent_gold">#FFB300</color>
+    <color name="success">#00C853</color>
+    <color name="danger">#D50000</color>
+    <color name="bg_dark">#0A0F1D</color>
+    <color name="card_dark">#121B2E</color>
+    <color name="card_stroke">#1E2C4A</color>
+    <color name="text_main">#FFFFFF</color>
+    <color name="text_muted">#90A4AE</color>
+    <color name="work_profile_badge">#FF8F00</color>
+</resources>
