@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openNativeUserSettings() {
         try {
-            Intent intent = new Intent(Settings.ACTION_USER_SETTINGS);
+            Intent intent = new Intent("android.settings.USER_SETTINGS");
             startActivity(intent);
         } catch (Exception e) {
             try {
